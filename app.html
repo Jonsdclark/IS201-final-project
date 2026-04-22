@@ -4,22 +4,19 @@
     <title>Space Dodge Pro</title>
     <style>
         body { margin: 0; background: #0b0d17; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; overflow: hidden; }
-        canvas { background: #000; display: block; margin: 20px auto; border: 2px solid #3498db; box-shadow: 0 0 20px #3498db; cursor: none; }
+        canvas { background: #000; display: block; margin: 20px auto; border: 2px solid #3498db; box-shadow: 0 0 20px #3498db; cursor: crosshair; }
         .ui { position: absolute; top: 10px; width: 100%; pointer-events: none; }
-        .btn-back { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .btn-back { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; pointer-events: auto; }
         .btn-back:hover { background: #2980b9; }
     </style>
 </head>
 <body>
-
     <div class="ui">
         <h1>SPACE DODGE</h1>
         <p>Score: <span id="score">0</span></p>
-        <p id="status">Move mouse/finger to survive!</p>
+        <p id="status">Avoid the red asteroids!</p>
     </div>
-
     <canvas id="gameCanvas"></canvas>
-
     <a href="scratch.html" class="btn-back">Back to Scratch Page</a>
 
     <script>
@@ -28,77 +25,37 @@
         const scoreEl = document.getElementById("score");
         const statusEl = document.getElementById("status");
 
-        canvas.width = 600;
-        canvas.height = 400;
+        canvas.width = 600; canvas.height = 400;
+        let score = 0, gameActive = true, enemies = [];
+        let player = { x: 300, y: 350, w: 20, h: 20 };
 
-        let score = 0;
-        let gameActive = true;
-        let player = { x: 300, y: 350, w: 20, h: 20, color: "#3498db" };
-        let enemies = [];
-
-        // Handle Mouse Movement
         window.addEventListener("mousemove", (e) => {
             const rect = canvas.getBoundingClientRect();
             player.x = e.clientX - rect.left - player.w / 2;
             player.y = e.clientY - rect.top - player.h / 2;
         });
 
-        function spawnEnemy() {
+        function spawn() {
             if(!gameActive) return;
-            const size = Math.random() * 20 + 10;
-            enemies.push({
-                x: Math.random() * canvas.width,
-                y: -size,
-                size: size,
-                speed: Math.random() * 3 + 2 + (score / 500) // Gets faster over time
-            });
-            setTimeout(spawnEnemy, 600 - Math.min(score, 400)); 
+            enemies.push({ x: Math.random() * canvas.width, y: -20, s: Math.random() * 15 + 10, spd: Math.random() * 3 + 2 + (score/500) });
+            setTimeout(spawn, 600 - Math.min(score, 400));
         }
 
-        function update() {
+        function draw() {
             if (!gameActive) return;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Player
-            ctx.fillStyle = player.color;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = player.color;
+            ctx.fillStyle = "#3498db";
             ctx.fillRect(player.x, player.y, player.w, player.h);
-
-            // Update & Draw Enemies
-            enemies.forEach((en, index) => {
-                en.y += en.speed;
+            enemies.forEach((en, i) => {
+                en.y += en.spd;
                 ctx.fillStyle = "#e74c3c";
-                ctx.shadowColor = "#e74c3c";
-                ctx.beginPath();
-                ctx.arc(en.x, en.y, en.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Collision Detection
-                if (player.x < en.x + en.size && player.x + player.w > en.x - en.size &&
-                    player.y < en.y + en.size && player.y + player.h > en.y - en.size) {
-                    gameOver();
-                }
-
-                // Remove enemies off screen
-                if (en.y > canvas.height) {
-                    enemies.splice(index, 1);
-                    score += 10;
-                    scoreEl.innerText = score;
-                }
+                ctx.beginPath(); ctx.arc(en.x, en.y, en.s, 0, Math.PI*2); ctx.fill();
+                if (player.x < en.x + en.s && player.x + player.w > en.x - en.s && player.y < en.y + en.s && player.y + player.h > en.y - en.size) { gameActive = false; statusEl.innerHTML = "<b style='color:red'>GAME OVER!</b> Refresh to restart."; }
+                if (en.y > canvas.height) { enemies.splice(i, 1); score += 10; scoreEl.innerText = score; }
             });
-
-            requestAnimationFrame(update);
+            requestAnimationFrame(draw);
         }
-
-        function gameOver() {
-            gameActive = false;
-            statusEl.innerHTML = "<b style='color:red'>GAME OVER!</b> Refresh page to try again.";
-        }
-
-        spawnEnemy();
-        update();
+        spawn(); draw();
     </script>
 </body>
 </html>
