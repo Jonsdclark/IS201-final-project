@@ -1,94 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Space Dodge: Starfield Edition</title>
+    <title>Neon Dodger</title>
     <style>
-        body { margin: 0; background: #05070a; color: white; font-family: 'Courier New', Courier, monospace; text-align: center; overflow: hidden; }
-        canvas { display: block; margin: 20px auto; border: 3px solid #00f2ff; box-shadow: 0 0 30px #00f2ff; cursor: none; background: #000; }
-        .ui { position: absolute; top: 15px; width: 100%; pointer-events: none; text-shadow: 2px 2px 5px #000; }
-        #status { font-size: 24px; font-weight: bold; transition: 0.3s; }
-        .btn-back { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 12px 25px; background: #00f2ff; color: #05070a; text-decoration: none; border-radius: 4px; font-weight: bold; border: 2px solid white; }
-        .btn-back:hover { background: white; }
+        body { margin: 0; background: #05070a; color: white; font-family: 'Courier New', monospace; text-align: center; overflow: hidden; }
+        canvas { display: block; margin: 10px auto; border: 2px solid #00f2ff; background: #000; cursor: crosshair; }
+        .ui { padding: 10px; }
+        #overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #00f2ff; }
+        button { padding: 10px 20px; background: #00f2ff; border: none; cursor: pointer; font-weight: bold; }
+        .btn-back { display: inline-block; margin-top: 10px; color: #00f2ff; text-decoration: none; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div class="ui">
         <h1>NEON DODGER</h1>
-        <p>SCORE: <span id="score">0</span></p>
-        <div id="status">SURVIVE THE VOID</div>
+        <div>SCORE: <span id="scoreText">0</span></div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
-    <a href="scratch.html" class="btn-back">EXIT TO SCRATCH PAGE</a>
+
+    <div id="overlay">
+        <h2 id="msg">READY?</h2>
+        <button onclick="startGame()">START GAME</button>
+        <br>
+        <a href="scratch.html" class="btn-back">Return to Scratch Page</a>
+    </div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        const scoreEl = document.getElementById("score");
-        const statusEl = document.getElementById("status");
+        const scoreText = document.getElementById("scoreText");
+        const overlay = document.getElementById("overlay");
+        const msg = document.getElementById("msg");
 
-        canvas.width = 700;
-        canvas.height = 500;
+        canvas.width = 600;
+        canvas.height = 450;
 
         let score = 0;
-        let gameActive = true;
-        let player = { x: 350, y: 400, w: 25, h: 25 };
+        let gameActive = false;
+        let player = { x: 300, y: 400, size: 20 };
         let enemies = [];
         let stars = [];
 
-        // Create initial Starfield
-        for(let i=0; i<100; i++) {
-            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*2, speed: Math.random()*2+1 });
+        // Initialize Stars
+        for(let i=0; i<50; i++) {
+            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2 });
         }
 
         window.addEventListener("mousemove", (e) => {
-            if(!gameActive) return;
             const rect = canvas.getBoundingClientRect();
-            player.x = e.clientX - rect.left - player.w/2;
-            player.y = e.clientY - rect.top - player.h/2;
+            player.x = e.clientX - rect.left - player.size/2;
+            player.y = e.clientY - rect.top - player.size/2;
         });
+
+        function startGame() {
+            score = 0;
+            enemies = [];
+            gameActive = true;
+            overlay.style.display = "none";
+            scoreText.innerText = "0";
+            update();
+        }
 
         function spawnEnemy() {
             if(!gameActive) return;
             enemies.push({
                 x: Math.random() * canvas.width,
-                y: -30,
-                radius: Math.random() * 15 + 10,
-                speed: Math.random() * 4 + 3 + (score/1000)
+                y: -20,
+                r: Math.random() * 10 + 10,
+                v: Math.random() * 3 + 2 + (score/500)
             });
-            setTimeout(spawnEnemy, Math.max(200, 600 - (score/10)));
+            setTimeout(spawnEnemy, 600);
         }
 
         function update() {
+            if(!gameActive) return;
+
+            // Background
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Draw & Move Stars
+            // Stars
             ctx.fillStyle = "white";
-            stars.forEach(s => {
-                s.y += s.speed;
-                if(s.y > canvas.height) s.y = 0;
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-                ctx.fill();
+            stars.forEach(st => {
+                st.y += 1;
+                if(st.y > canvas.height) st.y = 0;
+                ctx.fillRect(st.x, st.y, st.s, st.s);
             });
 
-            if (!gameActive) {
-                // Game Over Overlay
-                ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "white";
-                ctx.font = "50px Courier New";
-                ctx.fillText("YOU LOST", 230, 250);
-                ctx.font = "20px Courier New";
-                ctx.fillText("REFRESH TO RESTART", 245, 300);
-                return;
-            }
-
-            // 2. Draw Player (Neon Blue Square)
+            // Player
             ctx.strokeStyle = "#00f2ff";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(player.x, player.y, player.w, player.h);
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = "#00f
+            ctx.lineWidth = 2;
+            ctx.strokeRect(player.x, player.y, player.size, player.size);
+
+            // Enemies
+            enemies.forEach((en, i) => {
+                en.y += en.v;
+                ctx.fillStyle = "#ff0055";
+                ctx.beginPath();
+                ctx.arc(en.x, en.y, en.r, 0, Math.PI*2);
+                ctx.fill();
+
+                // Simple Box-to-Circle Collision
+                if (player.x < en.x + en.r && player.x + player.size > en.x - en.r &&
+                    player.y < en.y + en.r && player.y + player.size > en.y - en.r) {
+                    gameOver();
+                }
+
+                if(en.y > canvas.height + 20) {
+                    enemies.splice(i, 1);
+                    score += 10;
+                    scoreText.innerText = score;
+                }
+            });
+
+            if(gameActive) requestAnimationFrame(update);
+        }
+
+        function gameOver() {
+            gameActive = false;
+            msg.innerHTML = "<span style='color:red'>YOU LOST</span><br>Score: " + score;
+            overlay.style.display = "block";
+        }
+
+        spawnEnemy();
+    </script>
+</body>
+</html>
