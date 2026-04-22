@@ -1,27 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Professional Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jonathan Clark | Resume</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .resume-header { background: #212529; color: white; padding: 3rem 0; margin-bottom: 2rem; }
+        .section-title { border-bottom: 2px solid #212529; padding-bottom: 5px; margin-bottom: 1.5rem; text-transform: uppercase; font-weight: bold; }
+        .experience-item { margin-bottom: 1.5rem; }
+        .date { color: #6c757d; font-style: italic; }
+        .nav-btn { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+    </style>
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-dark bg-dark mb-4">
+<body>
+
+    <a href="scratch.html" class="btn btn-primary nav-btn shadow">View Scratch Page</a>
+
+    <header class="resume-header text-center">
         <div class="container">
-            <span class="navbar-brand">Portfolio</span>
-            <a href="scratch.html" class="btn btn-outline-light">View Scratch Page</a>
+            <h1 class="display-4 fw-bold">JONATHAN CLARK</h1>
+            <p class="lead">j0nclark@byu.edu | (619)-536-5444</p>
         </div>
-    </nav>
-    <div class="container bg-white p-5 shadow">
-        <h1>Resume</h1>
-        <hr>
-        <h3>Education</h3>
-        <p>University Level Coursework in Accounting and Data Analytics.</p>
-        <h3>Skills</h3>
-        <ul>
-            <li>Financial Analysis</li>
-            <li>Excel Solver & VBA Programming</li>
-            <li>Tableau & SQL</li>
-        </ul>
+    </header>
+
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h3 class="section-title">Summary</h3>
+                <p>Creative and dependable professional with a passion for customer service and hands-on problem solving. Experienced in order fulfillment, cashiering, and team collaboration. Eager to contribute fresh ideas and a strong work ethic to a results-driven organization.</p>
+            </div>
+
+            <div class="col-md-8">
+                <h3 class="section-title">Experience</h3>
+                
+                <div class="experience-item">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="fw-bold mb-0">Guest Advocate</h5>
+                        <span class="date">Jun 2021 — Jan 2023</span>
+                    </div>
+                    <div class="text-muted mb-2">Target Corporation, Santee, CA</div>
+                    <ul>
+                        <li>Delivered exceptional customer service, boosting satisfaction scores.</li>
+                        <li>Resolved customer inquiries swiftly, enhancing loyalty and retention.</li>
+                        <li>Utilized POS systems efficiently, streamlining checkout processes.</li>
+                        <li>Trained new team members, fostering a collaborative work environment.</li>
+                        <li>Promoted store promotions, driving sales and increasing revenue.</li>
+                    </ul>
+                </div>
+
+                <div class="experience-item">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="fw-bold mb-0">Maintenance Worker</h5>
+                        <span class="date">Oct 2024 — Aug 2025</span>
+                    </div>
+                    <div class="text-muted mb-2">Billings Real Estate, Lakeside, CA</div>
+                    <ul>
+                        <li>Conducted safety inspections, ensuring compliance and reducing incidents.</li>
+                        <li>Implemented preventive maintenance schedules, enhancing operational efficiency.</li>
+                        <li>Managed inventory of supplies, optimizing costs and reducing waste.</li>
+                        <li>Collaborated with teams to streamline processes, boosting productivity.</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title mt-4">Education</h3>
+                <div class="experience-item">
+                    <h5 class="fw-bold mb-0">Masters of Accounting</h5>
+                    <div class="text-muted">Brigham Young University, Provo, UT <span class="date">(2024 — 2028)</span></div>
+                    <p class="mt-2">Currently maintaining a 3.92 GPA. Courses include Accounting, Economics, and Information Systems.</p>
+                </div>
+                <div class="experience-item">
+                    <h5 class="fw-bold mb-0">Accounting</h5>
+                    <div class="text-muted">Brigham Young University - Idaho, Rexburg, ID <span class="date">(2023 — 2024)</span></div>
+                    <p class="mt-2">Maintained a 4.0 GPA during the course of my time at BYUI.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h3 class="section-title">Skills</h3>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">✔️ Order Fulfillment</li>
+                            <li class="mb-2">✔️ Curbside Order Delivery</li>
+                            <li class="mb-2">✔️ Customer Service Excellence</li>
+                            <li class="mb-2">✔️ Point-of-Sale (POS) Systems</li>
+                            <li class="mb-2">✔️ Conflict Resolution</li>
+                            <li class="mb-2">✔️ Inventory Management</li>
+                            <li class="mb-2">✔️ Team Collaboration</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <footer class="text-center py-4 bg-light">
+        <p class="text-muted small">&copy; 2026 Jonathan Clark</p>
+    </footer>
+
 </body>
 </html>
