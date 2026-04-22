@@ -4,25 +4,27 @@
     <title>Neon Dodger</title>
     <style>
         body { margin: 0; background: #05070a; color: white; font-family: 'Courier New', monospace; text-align: center; overflow: hidden; }
-        canvas { display: block; margin: 10px auto; border: 2px solid #00f2ff; background: #000; cursor: crosshair; }
+        /* hide the cursor so it doesn't block the player square */
+        canvas { display: block; margin: 10px auto; border: 2px solid #00f2ff; background: #000; cursor: none; }
         .ui { padding: 10px; }
-        #overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #00f2ff; }
-        button { padding: 10px 20px; background: #00f2ff; border: none; cursor: pointer; font-weight: bold; }
-        .btn-back { display: inline-block; margin-top: 10px; color: #00f2ff; text-decoration: none; font-size: 12px; }
+        #overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 30px; border: 2px solid #00f2ff; min-width: 200px; }
+        button { padding: 15px 30px; background: #00f2ff; border: none; cursor: pointer; font-weight: bold; font-size: 1.2em; }
+        button:hover { background: #fff; }
+        .btn-back { display: inline-block; margin-top: 20px; color: #00f2ff; text-decoration: none; font-size: 14px; border-bottom: 1px solid #00f2ff; }
     </style>
 </head>
 <body>
 
     <div class="ui">
         <h1>NEON DODGER</h1>
-        <div>SCORE: <span id="scoreText">0</span></div>
+        <div style="font-size: 1.5em;">SCORE: <span id="scoreText">0</span></div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <div id="overlay">
-        <h2 id="msg">READY?</h2>
-        <button onclick="startGame()">START GAME</button>
+        <h2 id="msg">VOID READY</h2>
+        <button onclick="startGame()">START MISSION</button>
         <br>
         <a href="scratch.html" class="btn-back">Return to Scratch Page</a>
     </div>
@@ -42,10 +44,11 @@
         let player = { x: 300, y: 400, size: 20 };
         let enemies = [];
         let stars = [];
+        let spawnTimer;
 
-        // Initialize Stars
-        for(let i=0; i<50; i++) {
-            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2 });
+        // Initialize Stars once
+        for(let i=0; i<80; i++) {
+            stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2, spd: Math.random()*2 + 0.5 });
         }
 
         window.addEventListener("mousemove", (e) => {
@@ -55,11 +58,17 @@
         });
 
         function startGame() {
+            // Reset everything
             score = 0;
             enemies = [];
             gameActive = true;
             overlay.style.display = "none";
             scoreText.innerText = "0";
+            
+            // Clear any old timers and start fresh
+            if(spawnTimer) clearInterval(spawnTimer);
+            spawnTimer = setInterval(spawnEnemy, 400); // Rocks spawn every 0.4 seconds
+            
             update();
         }
 
@@ -67,34 +76,33 @@
             if(!gameActive) return;
             enemies.push({
                 x: Math.random() * canvas.width,
-                y: -20,
-                r: Math.random() * 10 + 10,
-                v: Math.random() * 3 + 2 + (score/500)
+                y: -30,
+                r: Math.random() * 12 + 8,
+                v: Math.random() * 4 + 3 + (score/400) // Gradually gets faster
             });
-            setTimeout(spawnEnemy, 600);
         }
 
         function update() {
             if(!gameActive) return;
 
-            // Background
+            // Black background
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Stars
+            // Moving Stars
             ctx.fillStyle = "white";
             stars.forEach(st => {
-                st.y += 1;
+                st.y += st.spd;
                 if(st.y > canvas.height) st.y = 0;
                 ctx.fillRect(st.x, st.y, st.s, st.s);
             });
 
-            // Player
+            // Player Square (Neon Blue)
             ctx.strokeStyle = "#00f2ff";
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.strokeRect(player.x, player.y, player.size, player.size);
 
-            // Enemies
+            // Enemy Asteroids (Neon Pink/Red)
             enemies.forEach((en, i) => {
                 en.y += en.v;
                 ctx.fillStyle = "#ff0055";
@@ -102,13 +110,14 @@
                 ctx.arc(en.x, en.y, en.r, 0, Math.PI*2);
                 ctx.fill();
 
-                // Simple Box-to-Circle Collision
+                // Collision Check
                 if (player.x < en.x + en.r && player.x + player.size > en.x - en.r &&
                     player.y < en.y + en.r && player.y + player.size > en.y - en.r) {
                     gameOver();
                 }
 
-                if(en.y > canvas.height + 20) {
+                // Clean up old enemies and add score
+                if(en.y > canvas.height + 30) {
                     enemies.splice(i, 1);
                     score += 10;
                     scoreText.innerText = score;
@@ -120,11 +129,10 @@
 
         function gameOver() {
             gameActive = false;
-            msg.innerHTML = "<span style='color:red'>YOU LOST</span><br>Score: " + score;
+            clearInterval(spawnTimer);
+            msg.innerHTML = "<span style='color:#ff0055'>MISSION FAILED</span><br>SCORE: " + score;
             overlay.style.display = "block";
         }
-
-        spawnEnemy();
     </script>
 </body>
 </html>
